@@ -30,7 +30,8 @@ class _Framer:
 
         # 模块形式必须是文件或目录
         # 目录形式模块必须包含 __init__.py 文件
-        # 如果模块逻辑复杂分文件必须使用目录形式模块
+        # 必须优先使用目录形式模块
+        # 如果逻辑简单使用文件形式模块
         base_path = self._modules_dir / name
         module_path = base_path / "__init__.py" if base_path.is_dir() else base_path
 
