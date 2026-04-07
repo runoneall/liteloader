@@ -60,6 +60,7 @@ class _Framer:
 
     # 模块必须创建一个命名空间承载暴露的 api
     # 必须使用 self.namespace = self._namespace("space_name") 来创建命名空间
+    # 模块访问自己的命名空间必须使用 self.namespace
     # 注入型模块不需要这一步
     # 注入型模块必须通过 self.framer.space_name 访问其他模块命名空间
     def _namespace(self, name: str) -> SimpleNamespace:
