@@ -70,7 +70,11 @@ class _Framer:
 
     def _load_all(self):
         for item in os.listdir(self._modules_dir):
-            if not item.startswith("_"):  # 自动忽略以 _ 开头的文件或目录
+
+            # liteloader 不会自动加载以 _ 开头的模块
+            # 如果模块不需要自动加载模块名必须以 _ 开头
+            # _require 可以引入以 _ 开头的模块
+            if not item.startswith("_"):
                 self._require(item)
 
 
