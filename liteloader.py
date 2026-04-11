@@ -20,6 +20,7 @@ class _Framer:
         self._load_all()
 
     _loaded_modules: set[str] = set()
+    _loading_modules: set[str] = set()
 
     # 模块必须使用 self._require 来声明依赖
     # name 必须是 modules 目录下的文件名或目录名
@@ -27,6 +28,13 @@ class _Framer:
     def _require(self, name: str):
         if name in self._loaded_modules:
             return
+
+        if name in self._loading_modules:
+            raise ImportError(
+                f"liteloader: circular dependency detected for module '{name}'"
+            )
+
+        self._loading_modules.add(name)
 
         # 模块形式必须是文件或目录
         # 目录形式模块必须包含 __init__.py 文件
@@ -56,7 +64,9 @@ class _Framer:
             )
 
         module.Module()  # 模块必须在 __init__ 中执行初始化逻辑
+
         self._loaded_modules.add(name)
+        self._loading_modules.remove(name)
 
     # 模块必须创建一个命名空间承载暴露的 api
     # 必须使用 self.namespace = self._namespace("space_name") 来创建命名空间
