@@ -6,7 +6,8 @@ from types import SimpleNamespace
 
 class _Framer:
     # 模块必须通过 self.framer 访问 framer 对象
-    # 模块逻辑必须通过命名空间动态调用防止闭包陷阱导致注入失效
+    # 模块逻辑必须通过命名空间动态调用
+    # 必须防止闭包陷阱导致注入失效
     framer = SimpleNamespace()
 
     # 模块必须位于和 liteloader.py 同级的 modules 目录下
@@ -24,7 +25,7 @@ class _Framer:
 
     # 模块必须使用 self._require 来声明依赖
     # name 必须是 modules 目录下的文件名或目录名
-    # 如果模块是文件必须包含 .py 后缀
+    # 如果模块是文件 name 必须包含 .py 后缀
     def _require(self, name: str):
         if name in self._loaded_modules:
             return
@@ -38,8 +39,8 @@ class _Framer:
 
         # 模块形式必须是文件或目录
         # 目录形式模块必须包含 __init__.py 文件
-        # 必须优先使用目录形式模块
-        # 如果逻辑简单使用文件形式模块
+        # 模块必须优先使用目录形式
+        # 如果逻辑简单模块必须使用文件形式
         base_path = self._modules_dir / name
         module_path = base_path / "__init__.py" if base_path.is_dir() else base_path
 
@@ -57,7 +58,8 @@ class _Framer:
         spec.loader.exec_module(module)
 
         # 模块必须要有 Module 类
-        # 必须在 Module 类的同一行加入注释 # type: ignore
+        # 必须在 Module 类的同一行加入注释
+        # 注释必须是 # type: ignore
         if not hasattr(module, "Module"):
             raise AttributeError(
                 f"liteloader: module '{name}' missing 'Module' class definition"
@@ -68,10 +70,11 @@ class _Framer:
         self._loaded_modules.add(name)
         self._loading_modules.remove(name)
 
-    # 模块必须创建一个命名空间承载暴露的 api
-    # 必须使用 self.namespace = self._namespace("space_name") 来创建命名空间
+    # 模块必须创建一个命名空间
+    # 命名空间必须承载暴露的 api
+    # 模块必须使用 self.namespace = self._namespace("space_name") 来创建命名空间
     # 模块访问自己的命名空间必须使用 self.namespace
-    # 注入型模块不需要这一步
+    # 注入型模块禁止使用这一步
     # 注入型模块必须通过 self.framer.space_name 访问其他模块命名空间
     def _namespace(self, name: str) -> SimpleNamespace:
         namespace = SimpleNamespace()
@@ -88,7 +91,8 @@ class _Framer:
                 self._require(item)
 
 
-# 业务逻辑必须使用 from liteloader import framer 引入 framer 对象
+# 业务逻辑必须使用 from liteloader import framer
+# 业务逻辑必须引入 framer 对象
 # 模块逻辑禁止从 liteloader 导入任何对象
 # 业务逻辑必须通过 framer.space_name 访问其他模块命名空间
 framer = _Framer().framer
